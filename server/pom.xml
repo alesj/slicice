@@ -43,6 +43,38 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>update</id>
+            <activation>
+                <property>
+                    <name>update</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.appengine</groupId>
+                        <artifactId>appengine-maven-plugin</artifactId>
+                        <version>${version.com.google.gae}</version>
+                        <configuration>
+                            <enableJarClasses>false</enableJarClasses>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
 
 
