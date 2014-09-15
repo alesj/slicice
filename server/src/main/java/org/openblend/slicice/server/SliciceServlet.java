@@ -3,8 +3,11 @@ package org.openblend.slicice.server;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +30,9 @@ public class SliciceServlet extends HttpServlet {
         String loc = req.getParameter("loc");
         String top = req.getParameter("top");
 
-        TableParser parser = new GaeTableParser(new PrintStream(resp.getOutputStream()));
+        OutputStream out = resp.getOutputStream();
+
+        TableParser parser = new GaeTableParser(new PrintStream(out));
         parser.parse(url);
         if (loc != null) {
             int pages = Integer.parseInt(loc);
@@ -36,14 +41,36 @@ public class SliciceServlet extends HttpServlet {
             }
         }
 
-        Table user = parser.popTable(username);
-        parser.setOther(user);
+        out.write("<html>".getBytes());
+        out.write(String.format("<title>%s comparison</title>", username).getBytes());
+        out.write("<body>".getBytes());
+        out.write(String.format("<a href=\"/\">[[HOME]]</a><p/><p/>").getBytes());
 
-        parser.top(top != null ? Integer.parseInt(top) : 20);
+        Table user = parser.popTable(username);
+        if (user == null) {
+            out.write(String.format("No such user <b>%s</b>!!<p/>", username).getBytes());
+        } else {
+            parser.setOther(user);
+            parser.top(top != null ? Integer.parseInt(top) : 20);
+        }
+
+        out.write("</body></html>".getBytes());
     }
 
     private static class GaeTable extends Table {
+        public void print(Table other) {
+            out.println(String.format("Username: %s<p/>", getUsername()));
 
+            Set<Integer> t_own = new TreeSet<>(other.getOwn());
+            t_own.retainAll(getMiss());
+            out.println(String.format("I can offer [%s]: %s<p/>", t_own.size(), t_own));
+
+            Set<Integer> t_miss = new TreeSet<>(getOwn());
+            t_miss.retainAll(other.getMiss());
+            out.println(String.format("I can get [%s]: %s<p/>", t_miss.size(), t_miss));
+
+            out.println("------------------------------------<p/>");
+        }
     }
 
     private static class GaeTableParser extends TableParser {
@@ -61,7 +88,7 @@ public class SliciceServlet extends HttpServlet {
 
         @Override
         protected Table createTable() {
-            GaeTable table = new GaeTable();
+            Table table = new GaeTable();
             table.setOut(rout);
             return table;
         }

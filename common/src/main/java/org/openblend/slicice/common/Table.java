@@ -17,7 +17,7 @@ public class Table implements Comparable<Table> {
 
     private int x = -1;
 
-    private PrintStream out = System.out;
+    protected PrintStream out = System.out;
 
     public void setOut(PrintStream out) {
         this.out = out;
