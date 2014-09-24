@@ -36,14 +36,6 @@ public class Table implements Comparable<Table> {
             out.println("Username: " + getUsername());
         }
 
-        Set<Integer> t_own = new TreeSet<>(other.getOwn());
-        t_own.retainAll(getMiss());
-        if (print) {
-            out.println(String.format("I can offer [%s]: %s", t_own.size(), t_own));
-        } else {
-            setCanOffer(t_own.size());
-        }
-
         Set<Integer> t_miss = new TreeSet<>(getOwn());
         t_miss.retainAll(other.getMiss());
         if (print) {
@@ -52,13 +44,21 @@ public class Table implements Comparable<Table> {
             setCanGet(t_miss.size());
         }
 
+        Set<Integer> t_own = new TreeSet<>(other.getOwn());
+        t_own.retainAll(getMiss());
+        if (print) {
+            out.println(String.format("I can offer [%s]: %s", t_own.size(), t_own));
+        } else {
+            setCanOffer(t_own.size());
+        }
+
         if (print) {
             out.println("--------------");
         }
     }
 
     public boolean match() {
-        return (canOffer > 0 && canGet >= canOffer);
+        return (canOffer > 0 && canGet > 0);
     }
 
     public void reset() {

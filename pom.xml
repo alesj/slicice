@@ -15,7 +15,7 @@
     <description>Slicice Build</description>
 
     <properties>
-        <version.com.google.gae>1.9.10</version.com.google.gae>
+        <version.com.google.gae>1.9.11</version.com.google.gae>
         <version.com.google.guava>15.0</version.com.google.guava>
         <version.javax.servlet>2.5</version.javax.servlet>
     </properties>
